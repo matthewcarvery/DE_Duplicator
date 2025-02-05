@@ -10,7 +10,7 @@ import secret
 from tkinter import filedialog
 sys.setrecursionlimit(4000)
 
-accountname = "AAA_Sandbox"
+accountname = "AAA_MWG"
 client_id = secret.account[accountname]['client_id']
 subdomain = secret.account[accountname]['subdomain']
 MID = secret.account[accountname]['MID']
@@ -21,7 +21,7 @@ token = generate_access_token(client_id, clientsecret, subdomain)
 
 
 folderID = '401456'
-MainDETemplate = 'FCB4CC88-C54C-46DC-ACBF-80D87838D4CE'
+MainDETemplate = 'CA30ABEB-04C7-4EB6-9CD2-9112D904E058'
 #MainDETemplate = 'AAA_Data_Spec'
 
 def getDEfields(DEVal, DEProp):
@@ -29,7 +29,7 @@ def getDEfields(DEVal, DEProp):
     headers = {"content-type": "text/xml"}
     response = requests.request("POST", soapurl, headers=headers, data=payload)
     o = xmltodict.parse(response.text)
-    if "Results" in o["soap:Envelope"]["soap:Body"]["RetrieveResponseMsg"].keys(): 
+    if "Results" in o["soap:Envelope"]["soap:Body"]["RetrieveResponseMsg"].keys():
         q = o["soap:Envelope"]["soap:Body"]["RetrieveResponseMsg"]["Results"]
         nq = sorted(q, key=lambda d: int(d['Ordinal']))
         return(nq)
@@ -54,8 +54,8 @@ def makeDE(DEName, newList, folderID, test):
         DefaultVal = newList[x]['DefaultValue'] if newList[x]['DefaultValue'] != None else ""
         if ('MaxLength' not in newList[x]) or (newList[x]['FieldType'] == "Text" and newList[x]['MaxLength'] == 0) or (newList[x]['FieldType'] == "Number") or (newList[x]['FieldType'] == "Date") or (newList[x]['FieldType'] == "Boolean") :
             uploadmid += f"<Field>\n   <CustomerKey>{newList[x]['Name']}</CustomerKey>\n   <Name>{newList[x]['Name']}</Name>\n <FieldType>{newList[x]['FieldType']}</FieldType>\n  <IsRequired>{newList[x]['IsRequired']}</IsRequired>\n   <IsPrimaryKey>{priKey}</IsPrimaryKey>\n<DefaultValue>{DefaultVal}</DefaultValue>\n</Field>\n "
-        else: 
-            uploadmid += f"<Field>\n   <CustomerKey>{newList[x]['Name']}</CustomerKey>\n   <Name>{newList[x]['Name']}</Name>\n <FieldType>{newList[x]['FieldType']}</FieldType>\n  <IsRequired>{newList[x]['IsRequired']}</IsRequired>\n   <IsPrimaryKey>{priKey}</IsPrimaryKey>\n<DefaultValue>{DefaultVal}</DefaultValue>\n<MaxLength>{newList[x]['MaxLength']}</MaxLength></Field>\n" 
+        else:
+            uploadmid += f"<Field>\n   <CustomerKey>{newList[x]['Name']}</CustomerKey>\n   <Name>{newList[x]['Name']}</Name>\n <FieldType>{newList[x]['FieldType']}</FieldType>\n  <IsRequired>{newList[x]['IsRequired']}</IsRequired>\n   <IsPrimaryKey>{priKey}</IsPrimaryKey>\n<DefaultValue>{DefaultVal}</DefaultValue>\n<MaxLength>{newList[x]['MaxLength']}</MaxLength></Field>\n"
     uppayloadend = "</Fields> \n     </Objects> \n        </CreateRequest> \n   </s:Body> \n </s:Envelope>"
     uppayload = uppayloadstart + uploadmid + uppayloadend
     headers = {"content-type": "text/xml"}
@@ -66,7 +66,7 @@ def makeDE(DEName, newList, folderID, test):
         return("error")
     else:
         return(m)
-                                      
+
 def postdata(items, ukey):
     uaccess_token, uexpire = generate_access_token(client_id, clientsecret, subdomain)
     uheaders = {'authorization': f'Bearer {uaccess_token}', 'content-type': 'application/json'}
@@ -93,7 +93,7 @@ def defineSheets(newList):
             excel_data_df = pd.read_excel(fileName, sheet_name=x)
             json_str = excel_data_df.to_dict(orient='records')
             if len(json_str) > 0:
-                print(postdata(json_str, ukey))        
+                print(postdata(json_str, ukey))
 
 
 newList = getDEfields(MainDETemplate, 'DataExtension.CustomerKey')
@@ -102,7 +102,3 @@ ds = defineSheets(newList)
 #json_str = [{"SubscriberKey": "Key1", "IsActive": 1, "FirstName": "Steve", "LastName": "Smith"}]
 #ukey = "PM_API_TEST"
 #postdata(json_str, ukey)
-
-
-
-
