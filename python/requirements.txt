@@ -6,4 +6,4 @@ urllib3==2.0.3
 pyexcel==0.7.0 
 pyexcel-xls==0.7.0
 pandas==2.2.3
-xmltodict== 0.13.0
+xmltodict==0.13.0
