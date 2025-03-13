@@ -91,6 +91,8 @@ def defineSheets(newList):
             u = getDEProps(oID)
             ukey = u["soap:Envelope"]["soap:Body"]["RetrieveResponseMsg"]["Results"]["CustomerKey"]
             excel_data_df = pd.read_excel(fileName, sheet_name=x)
+            excel_data_df = excel_data_df.fillna('')
+            #print(excel_data_df)
             json_str = excel_data_df.to_dict(orient='records')
             if len(json_str) > 0:
                 print(postdata(json_str, ukey))
