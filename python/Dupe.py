@@ -21,7 +21,7 @@ token = generate_access_token(client_id, clientsecret, subdomain)
 
 
 folderID = '401456'
-MainDETemplate = 'CA30ABEB-04C7-4EB6-9CD2-9112D904E058'
+
 #MainDETemplate = 'AAA_Data_Spec'
 
 def getDEfields(DEVal, DEProp):
@@ -43,8 +43,8 @@ def getDEProps(obID):
     response = requests.request("POST", soapurl, headers=headers, data=payload)
     return(xmltodict.parse(response.text))
 
-def makeDE(DEName, newList, folderID, test):
-    uppayloadstart = f"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n    <s:Header>\n        <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n        <a:To s:mustUnderstand=\"1\">{soapurl}</a:To>\n<fueloauth xmlns=\"http://exacttarget.com\">{token[0]}</fueloauth>\n    </s:Header>\n    <s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n  <CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n<Objects xsi:type=\"DataExtension\">\n <Client>\n <ID>{MID}</ID> \n </Client> \n<CategoryID>{folderID}</CategoryID>\n                <CustomerKey></CustomerKey>\n  <Name>{DEName}</Name>\n             <IsTestable>true</IsTestable>\n             <IsSendable>true</IsSendable>\n        <SendableDataExtensionField>\n       <CustomerKey>Email Address</CustomerKey>\n          <Name>Email Address</Name>\n <FieldType>Text</FieldType>\n </SendableDataExtensionField>\n <SendableSubscriberField>\n                    <Name>Subscriber Key</Name>\n   <Value></Value>\n  </SendableSubscriberField>\n   <Fields>\n"
+def makeDE(DEName, newList, folderID, test, SF):
+    uppayloadstart = f"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n    <s:Header>\n        <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n        <a:To s:mustUnderstand=\"1\">{soapurl}</a:To>\n<fueloauth xmlns=\"http://exacttarget.com\">{token[0]}</fueloauth>\n    </s:Header>\n    <s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n  <CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n<Objects xsi:type=\"DataExtension\">\n <Client>\n <ID>{MID}</ID> \n </Client> \n<CategoryID>{folderID}</CategoryID>\n                <CustomerKey></CustomerKey>\n  <Name>{DEName}</Name>\n             <IsTestable>true</IsTestable>\n             <IsSendable>true</IsSendable>\n        <SendableDataExtensionField>\n       <CustomerKey>{SF}</CustomerKey>\n          <Name>{SF}</Name>\n <FieldType>Text</FieldType>\n </SendableDataExtensionField>\n <SendableSubscriberField>\n                    <Name>Subscriber Key</Name>\n   <Value></Value>\n  </SendableSubscriberField>\n   <Fields>\n"
     uploadmid = ""
     for x in  range(len(newList)):
         if test == 1:
@@ -75,16 +75,20 @@ def postdata(items, ukey):
     insert_request = requests.post(url=f'{urest_url}', data=json.dumps(payload), headers=uheaders)
     return(insert_request)
 
-def defineSheets(newList):
+def defineSheets(newList, method):
     folderID = input("Enter folder ID: ")
     fileName= filedialog.askopenfilename()
     projectName = os.path.splitext(os.path.basename(fileName))[0]
     book = p.get_book(file_name=fileName)
     sheets = book.to_dict()
     sheetList = sheets.keys()
-    m = makeDE(projectName, newList, folderID, 0)
+    if method == "1":
+        SendField = "Email Address"
+        m = makeDE(projectName, newList, folderID, 0, SendField)
+    if method == "2":
+        SendField = input("Enter Field Name that relates to Subscribers on Subscriber Key: ")   
     for x in sheetList:
-        o = makeDE(x + "_" + projectName, newList, folderID, 1)
+        o = makeDE(x + "_" + projectName, newList, folderID, 1, SendField)
         if o != "error":
             print(o["soap:Envelope"]["soap:Body"]["CreateResponse"]["Results"]['StatusMessage'])
             oID = o["soap:Envelope"]["soap:Body"]["CreateResponse"]["Results"]['NewObjectID']
@@ -98,8 +102,19 @@ def defineSheets(newList):
                 print(postdata(json_str, ukey))
 
 
+print("DE Source:")
+print("1 - Master DE from Engage")
+print("2 - Custom DE")
+method = input("DE Source: ")
+if method == "1":
+    MainDETemplate = 'CA30ABEB-04C7-4EB6-9CD2-9112D904E058'
+elif method == "2":
+    MainDETemplate = input("Enter CustomerKey of DE: ")
+    SendField = input("Enter Field Name that relates to Subscribers on Subscriber Key: ")
 newList = getDEfields(MainDETemplate, 'DataExtension.CustomerKey')
-ds = defineSheets(newList)
+ds = defineSheets(newList, method, SendField)    
+
+
 
 #json_str = [{"SubscriberKey": "Key1", "IsActive": 1, "FirstName": "Steve", "LastName": "Smith"}]
 #ukey = "PM_API_TEST"
