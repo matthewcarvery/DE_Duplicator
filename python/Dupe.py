@@ -110,9 +110,8 @@ if method == "1":
     MainDETemplate = 'CA30ABEB-04C7-4EB6-9CD2-9112D904E058'
 elif method == "2":
     MainDETemplate = input("Enter CustomerKey of DE: ")
-    SendField = input("Enter Field Name that relates to Subscribers on Subscriber Key: ")
 newList = getDEfields(MainDETemplate, 'DataExtension.CustomerKey')
-ds = defineSheets(newList, method, SendField)    
+ds = defineSheets(newList, method)    
 
 
 
