@@ -103,12 +103,15 @@ def defineSheets(newList, method):
 
 
 print("DE Source:")
-print("1 - Master DE from Engage")
-print("2 - Custom DE")
+print("1 - New Fall 2026 Master DE from Engage")
+print("2 - Old Master DE from Engage")
+print("3 - Custom DE")
 method = input("DE Source: ")
 if method == "1":
+    MainDETemplate = '6608495E-470E-403A-961B-2EF8CF0F175A'
+elif method == "2":    
     MainDETemplate = 'CA30ABEB-04C7-4EB6-9CD2-9112D904E058'
-elif method == "2":
+elif method == "3":
     MainDETemplate = input("Enter External Key of DE: ")
 newList = getDEfields(MainDETemplate, 'DataExtension.CustomerKey')
 ds = defineSheets(newList, method)    
