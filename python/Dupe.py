@@ -73,6 +73,9 @@ def postdata(items, ukey):
     payload = {"items": items}
     urest_url = f'{resturl}data/v1/async/dataextensions/key:{ukey}/rows'
     insert_request = requests.post(url=f'{urest_url}', data=json.dumps(payload), headers=uheaders)
+    print(insert_request.status_code)
+    print(insert_request.headers)
+    print(insert_request.text)
     return(insert_request)
 
 def defineSheets(newList, method):
@@ -102,7 +105,7 @@ def defineSheets(newList, method):
             #print(excel_data_df)
             json_str = excel_data_df.to_dict(orient='records')
             if len(json_str) > 0:
-                print(postdata(json_str, ukey))
+                postdata(json_str, ukey)
 
 
 print("DE Source:")
@@ -111,7 +114,7 @@ print("2 - Old Master DE from Engage")
 print("3 - Custom DE")
 method = input("DE Source: ")
 if method == "1":
-    MainDETemplate = '6608495E-470E-403A-961B-2EF8CF0F175A'
+    MainDETemplate = '4F0BA982-D4E8-4E6B-B389-CDE64FB63985'
 elif method == "2":    
     MainDETemplate = 'CA30ABEB-04C7-4EB6-9CD2-9112D904E058'
 elif method == "3":
