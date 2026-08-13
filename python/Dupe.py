@@ -88,7 +88,7 @@ def defineSheets(newList, method):
     if method == "2":
         SendField = "Email Address"
         m = makeDE(projectName, newList, folderID, 0, SendField)    
-    if method == "":
+    if method == "3":
         SendField = input("Enter Field Name that relates to Subscribers on Subscriber Key: ")   
     for x in sheetList:
         o = makeDE(x + projectName, newList, folderID, 1, SendField)
