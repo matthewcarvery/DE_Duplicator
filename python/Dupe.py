@@ -73,9 +73,9 @@ def postdata(items, ukey):
     payload = {"items": items}
     urest_url = f'{resturl}data/v1/async/dataextensions/key:{ukey}/rows'
     insert_request = requests.post(url=f'{urest_url}', data=json.dumps(payload), headers=uheaders)
-    print(insert_request.status_code)
-    print(insert_request.headers)
-    print(insert_request.text)
+    #print(insert_request.status_code)
+    #print(insert_request.headers)
+    #print(insert_request.text)
     return(insert_request)
 
 def defineSheets(newList, method):
@@ -86,7 +86,7 @@ def defineSheets(newList, method):
     sheets = book.to_dict()
     sheetList = sheets.keys()
     if method == "1":
-        SendField = "Email Address"
+        SendField = "EmailAddress"
         m = makeDE(projectName, newList, folderID, 0, SendField)
     if method == "2":
         SendField = "Email Address"
